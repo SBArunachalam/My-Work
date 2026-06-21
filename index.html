@@ -1,0 +1,3558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.jpeg" type="image/jpeg" border-radius="50%">
+    <title>The Dharanika Artverse – Sacred Art, Handcrafted</title>
+    <meta name="description"
+        content="Premium handcrafted Mandala Art designed with passion. Custom portraits, digital The Dharanika Artverse, wall art and more.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* ══════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════ */
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #F0D080;
+            --gold-dark: #8B6914;
+            --purple: #7B3FA0;
+            --purple-light: #B06FD8;
+            --purple-deep: #3D1A6E;
+            --turquoise: #00C9B1;
+            --turquoise-light: #4DECD8;
+            --turquoise-dark: #007A6C;
+            --bg-deep: #060810;
+            --bg-dark: #0B0D1A;
+            --bg-card: #111428;
+            --bg-card2: #151830;
+            --text-main: #EDE8F5;
+            --text-muted: #9B95B0;
+            --text-dim: #5C5770;
+            --border: rgba(201, 168, 76, 0.18);
+            --border-purple: rgba(176, 111, 216, 0.2);
+            --glow-gold: 0 0 40px rgba(201, 168, 76, 0.3);
+            --glow-purple: 0 0 40px rgba(123, 63, 160, 0.4);
+            --glow-teal: 0 0 40px rgba(0, 201, 177, 0.3);
+            --nav-h: 70px;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.65;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ══════════════════════════════════════
+       CURSOR GLOW
+    ══════════════════════════════════════ */
+        #cursor-glow {
+            pointer-events: none;
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.06) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* ══════════════════════════════════════
+       LOADER
+    ══════════════════════════════════════ */
+        #loader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #030510;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .bp-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 150, 255, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 150, 255, 0.06) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0;
+            animation: gridFade 0.6s 0.2s forwards;
+        }
+
+        @keyframes gridFade {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .bp-label {
+            position: absolute;
+            top: 36px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Inter', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.22em;
+            color: rgba(100, 180, 255, 0.65);
+            text-transform: uppercase;
+            white-space: nowrap;
+            opacity: 0;
+            animation: fadeUp 0.5s 0.8s forwards;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .mandala-svg-wrap {
+            position: relative;
+            width: min(380px, 82vw);
+            height: min(380px, 82vw);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mandala-loader-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 18px rgba(100, 180, 255, 0.35));
+        }
+
+        .mandala-loader-svg .ring {
+            fill: none;
+            stroke-linecap: round;
+            stroke: #8EC8FF;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+
+        .r1 {
+            stroke-width: 1.2;
+            animation: drawRing 1.2s 1.0s cubic-bezier(.4, 0, .2, 1) forwards;
+        }
+
+        .r2 {
+            stroke-width: 1.0;
+            animation: drawRing 1.2s 1.4s cubic-bezier(.4, 0, .2, 1) forwards;
+        }
+
+        .r3 {
+            stroke-width: 0.9;
+            animation: drawRing 1.2s 1.8s cubic-bezier(.4, 0, .2, 1) forwards;
+        }
+
+        .r4 {
+            stroke-width: 0.8;
+            animation: drawRing 1.2s 2.2s cubic-bezier(.4, 0, .2, 1) forwards;
+        }
+
+        .r5 {
+            stroke-width: 0.7;
+            animation: drawRing 1.0s 2.6s cubic-bezier(.4, 0, .2, 1) forwards;
+        }
+
+        .r6 {
+            stroke-width: 0.6;
+            animation: drawRing 1.0s 2.9s cubic-bezier(.4, 0, .2, 1) forwards;
+        }
+
+        .petals {
+            fill: none;
+            stroke: #8EC8FF;
+            stroke-width: 0.8;
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
+            animation: drawRing 1.5s 1.5s cubic-bezier(.4, 0, .2, 1) forwards;
+        }
+
+        @keyframes drawRing {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .mandala-loader-svg.color-fill .ring,
+        .mandala-loader-svg.color-fill .petals {
+            transition: stroke 1.2s ease;
+        }
+
+        .mandala-loader-svg.color-fill .r1 {
+            stroke: var(--gold);
+        }
+
+        .mandala-loader-svg.color-fill .r2 {
+            stroke: var(--purple-light);
+        }
+
+        .mandala-loader-svg.color-fill .r3 {
+            stroke: var(--turquoise);
+        }
+
+        .mandala-loader-svg.color-fill .r4 {
+            stroke: var(--gold-light);
+        }
+
+        .mandala-loader-svg.color-fill .r5 {
+            stroke: var(--purple);
+        }
+
+        .mandala-loader-svg.color-fill .r6 {
+            stroke: var(--turquoise-light);
+        }
+
+        .mandala-loader-svg.color-fill .petals {
+            stroke: var(--gold);
+        }
+
+        .loader-bar-wrap {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(320px, 70vw);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .loader-pct {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.1em;
+        }
+
+        .loader-bar-bg {
+            width: 100%;
+            height: 2px;
+            background: rgba(201, 168, 76, 0.12);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .loader-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--turquoise));
+            border-radius: 4px;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 12px var(--gold);
+        }
+
+        #logoReveal {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+        }
+
+        .logo-reveal-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.4rem, 5vw, 2.2rem);
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            background: linear-gradient(135deg, #fff 20%, var(--gold-light) 50%, var(--turquoise-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-reveal-sub {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+        }
+
+        /* ══════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════ */
+        #navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 500;
+            padding: 0 5%;
+            height: var(--nav-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: transparent;
+            transition: background 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        #navbar.scrolled {
+            background: rgba(6, 8, 16, 0.92);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom-color: var(--border);
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-logo {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--gold-light);
+            background: rgba(201, 168, 76, 0.07);
+        }
+
+        .nav-cta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-wa-nav {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: #fff;
+            border: none;
+            padding: 9px 22px;
+            font-size: 0.72rem;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: box-shadow 0.3s, transform 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-wa-nav:hover {
+            box-shadow: 0 0 24px rgba(201, 168, 76, 0.5);
+            transform: translateY(-1px);
+        }
+
+        #hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 6px;
+            background: none;
+            border: none;
+        }
+
+        #hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        #hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        #hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        #hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        #mobileMenu {
+            position: fixed;
+            top: var(--nav-h);
+            left: 0;
+            right: 0;
+            background: rgba(6, 8, 22, 0.97);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 490;
+            padding: 20px 5% 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transform: translateY(-10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.35s var(--ease-out-expo), opacity 0.3s;
+        }
+
+        #mobileMenu.open {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #mobileMenu a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        #mobileMenu a:last-child {
+            border-bottom: none;
+        }
+
+        #mobileMenu a:hover {
+            color: var(--gold-light);
+        }
+
+        /* ══════════════════════════════════════
+       PAGE VIEWS / SPA
+    ══════════════════════════════════════ */
+        .view {
+            min-height: 100vh;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.45s var(--ease-out-expo), transform 0.45s var(--ease-out-expo);
+            transform: translateY(16px);
+        }
+
+        .view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ══════════════════════════════════════
+       PAGE TRANSITION OVERLAY
+    ══════════════════════════════════════ */
+        #page-transition {
+            position: fixed;
+            inset: 0;
+            z-index: 800;
+            pointer-events: none;
+            background: var(--bg-deep);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #page-transition.flash {
+            opacity: 1;
+        }
+
+        /* ══════════════════════════════════════
+       HOME – HERO
+    ══════════════════════════════════════ */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: calc(var(--nav-h) + 40px) 5% 80px;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .hero-bg-mandala {
+            position: absolute;
+            right: -5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: min(700px, 60vw);
+            height: min(700px, 60vw);
+            opacity: 0.09;
+            animation: slowSpin 60s linear infinite;
+        }
+
+        @keyframes slowSpin {
+            to {
+                transform: translateY(-50%) rotate(360deg);
+            }
+        }
+
+        .hero-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .hero-orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(123, 63, 160, 0.25) 0%, transparent 70%);
+            top: -100px;
+            right: 10%;
+        }
+
+        .hero-orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 201, 177, 0.12) 0%, transparent 70%);
+            bottom: 0;
+            left: 5%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 680px;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: heroFadeUp 0.8s 0.3s var(--ease-out-expo) forwards;
+        }
+
+        .hero-eyebrow::before,
+        .hero-eyebrow::after {
+            content: '';
+            display: block;
+            height: 1px;
+            width: 28px;
+            background: var(--gold);
+            opacity: 0.5;
+        }
+
+        .hero-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(2rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.08;
+            letter-spacing: 0.04em;
+            background: linear-gradient(135deg, #fff 15%, var(--gold-light) 45%, var(--turquoise-light) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: heroFadeUp 0.9s 0.5s var(--ease-out-expo) forwards;
+        }
+
+        .hero-desc {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1rem, 1.8vw, 1.3rem);
+            font-style: italic;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 40px;
+            max-width: 520px;
+            opacity: 0;
+            animation: heroFadeUp 0.9s 0.7s var(--ease-out-expo) forwards;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            opacity: 0;
+            animation: heroFadeUp 0.9s 0.9s var(--ease-out-expo) forwards;
+        }
+
+        @keyframes heroFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+            color: #1a1000;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            border-radius: 40px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: box-shadow 0.3s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .btn-primary:hover::after {
+            transform: translateX(100%);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(201, 168, 76, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 30px;
+            background: transparent;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            cursor: pointer;
+            transition: border-color 0.3s, color 0.3s, background 0.3s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+            background: rgba(201, 168, 76, 0.07);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+            opacity: 0;
+            animation: heroFadeUp 0.9s 1.1s var(--ease-out-expo) forwards;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-num {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        /* SCROLL INDICATOR */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 1;
+            opacity: 0;
+            animation: heroFadeUp 1s 1.4s var(--ease-out-expo) forwards;
+        }
+
+        .scroll-indicator span {
+            font-size: 0.6rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .scroll-mouse {
+            width: 20px;
+            height: 32px;
+            border: 1px solid var(--text-dim);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            padding-top: 6px;
+        }
+
+        .scroll-dot {
+            width: 3px;
+            height: 6px;
+            background: var(--gold);
+            border-radius: 3px;
+            animation: scrollBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollBounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(8px);
+                opacity: 0.3;
+            }
+        }
+
+        /* ══════════════════════════════════════
+       SECTION COMMONS
+    ══════════════════════════════════════ */
+        .section {
+            padding: 100px 5%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-eyebrow {
+            display: inline-block;
+            font-size: 0.68rem;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.5rem, 3.5vw, 2.6rem);
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            background: linear-gradient(135deg, #fff 20%, var(--gold-light) 55%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .section-sub {
+            color: var(--text-muted);
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.05rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .gold-line {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 20px auto 0;
+        }
+
+        /* FADE IN */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .fade-in-delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .fade-in-delay-3 {
+            transition-delay: 0.3s;
+        }
+
+        .fade-in-delay-4 {
+            transition-delay: 0.4s;
+        }
+
+        .fade-in-delay-5 {
+            transition-delay: 0.5s;
+        }
+
+        /* ══════════════════════════════════════
+       ARTWORK CARDS (HOME FEATURED + GALLERY)
+    ══════════════════════════════════════ */
+        .artworks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+        }
+
+        .artwork-card {
+            background: var(--bg-card);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s ease, border-color 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .artwork-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), var(--glow-gold);
+            border-color: rgba(201, 168, 76, 0.4);
+        }
+
+        .artwork-img-wrap {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+
+        .artwork-img-wrap svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            transition: transform 0.6s var(--ease-out-expo);
+        }
+
+        .artwork-card:hover .artwork-img-wrap svg {
+            transform: scale(1.04);
+        }
+
+        .artwork-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 30%, rgba(6, 8, 16, 0.85) 100%);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .artwork-card:hover .artwork-overlay {
+            opacity: 1;
+        }
+
+        .btn-view {
+            display: inline-block;
+            padding: 10px 22px;
+            background: rgba(201, 168, 76, 0.9);
+            color: #1a1000;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            border-radius: 30px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+
+        .btn-view:hover {
+            background: var(--gold-light);
+        }
+
+        .artwork-info {
+            padding: 18px 20px 20px;
+        }
+
+        .artwork-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .artwork-medium {
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+        }
+
+        .artwork-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .artwork-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--gold-light);
+        }
+
+        .artwork-tag {
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(201, 168, 76, 0.1);
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            color: var(--gold);
+        }
+
+        /* CENTER CTA */
+        .center-cta {
+            text-align: center;
+            margin-top: 52px;
+        }
+
+        /* ══════════════════════════════════════
+       PROCESS SECTION
+    ══════════════════════════════════════ */
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .process-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px 24px;
+            position: relative;
+            transition: transform 0.4s var(--ease-out-expo), border-color 0.3s;
+            overflow: hidden;
+        }
+
+        .process-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--turquoise));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .process-card:hover::before {
+            opacity: 1;
+        }
+
+        .process-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(201, 168, 76, 0.3);
+        }
+
+        .process-num {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, rgba(201, 168, 76, 0.2), rgba(201, 168, 76, 0.05));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .process-icon {
+            font-size: 1.8rem;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .process-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
+        .process-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ══════════════════════════════════════
+       TESTIMONIALS
+    ══════════════════════════════════════ */
+        .testimonials-wrap {
+            position: relative;
+            overflow: hidden;
+            padding: 10px 0;
+        }
+
+        .testimonials-track {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.6s var(--ease-out-expo);
+        }
+
+        .testimonial-card {
+            min-width: 320px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px 26px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 16px;
+            right: 22px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            color: rgba(201, 168, 76, 0.12);
+            line-height: 1;
+        }
+
+        .testimonial-stars {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 14px;
+        }
+
+        .testimonial-stars span {
+            color: var(--gold);
+            font-size: 0.85rem;
+        }
+
+        .testimonial-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testimonial-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--purple-deep), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            border: 1px solid var(--border-purple);
+            flex-shrink: 0;
+        }
+
+        .testimonial-name {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .testimonial-loc {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            letter-spacing: 0.08em;
+        }
+
+        .testimonials-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .t-nav-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .t-nav-btn:hover {
+            background: rgba(201, 168, 76, 0.1);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .t-dots {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .t-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .t-dot.active {
+            background: var(--gold);
+            transform: scale(1.3);
+        }
+
+        /* ══════════════════════════════════════
+       WHY US
+    ══════════════════════════════════════ */
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .why-card {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-card2));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px 22px;
+            text-align: center;
+            transition: transform 0.4s var(--ease-out-expo), box-shadow 0.3s;
+        }
+
+        .why-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .why-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .why-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .why-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ══════════════════════════════════════
+       NEWSLETTER / CTA BAND
+    ══════════════════════════════════════ */
+        .cta-band {
+            background: linear-gradient(135deg, var(--purple-deep) 0%, #1a0d3a 40%, #0a2a20 100%);
+            border: 1px solid rgba(176, 111, 216, 0.25);
+            border-radius: 24px;
+            margin: 0 5%;
+            padding: 60px 5%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-band::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.1) 0%, transparent 70%);
+        }
+
+        .cta-band h2 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.3rem, 3vw, 2rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .cta-band p {
+            color: var(--text-muted);
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            margin-bottom: 30px;
+            font-size: 1.05rem;
+            position: relative;
+        }
+
+        .cta-band-actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        /* ══════════════════════════════════════
+       GALLERY PAGE
+    ══════════════════════════════════════ */
+        .gallery-header {
+            padding: calc(var(--nav-h) + 60px) 5% 50px;
+            text-align: center;
+            background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(123, 63, 160, 0.15) 0%, transparent 70%);
+        }
+
+        .gallery-header h1 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.8rem, 5vw, 3.2rem);
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            background: linear-gradient(135deg, #fff 20%, var(--gold-light) 50%, var(--turquoise-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .gallery-header p {
+            color: var(--text-muted);
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        .gallery-controls {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 5% 30px;
+        }
+
+        .search-bar-wrap {
+            max-width: 560px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 14px 20px 14px 48px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            color: var(--text-main);
+            font-size: 0.88rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-bar::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-bar:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .filter-btn {
+            padding: 7px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            border-color: var(--gold);
+            color: #1a1000;
+            font-weight: 600;
+        }
+
+        .gallery-grid {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 5% 80px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 22px;
+        }
+
+        .gallery-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s, border-color 0.3s;
+            animation: cardIn 0.5s var(--ease-out-expo) both;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: scale(0.93) translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), var(--glow-gold);
+            border-color: rgba(201, 168, 76, 0.35);
+        }
+
+        .card-img {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+
+        .card-img svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            transition: transform 0.5s var(--ease-out-expo);
+        }
+
+        .gallery-card:hover .card-img svg {
+            transform: scale(1.05);
+        }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(6, 8, 16, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .btn-detail {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(201, 168, 76, 0.9);
+            color: #1a1000;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .card-body {
+            padding: 16px 18px 20px;
+        }
+
+        .card-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .card-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gold-light);
+        }
+
+        .card-cat {
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        /* ══════════════════════════════════════
+       ARTWORK DETAIL PAGE
+    ══════════════════════════════════════ */
+        .detail-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: calc(var(--nav-h) + 40px) 5% 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .art-frame {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            cursor: zoom-in;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 50px rgba(201, 168, 76, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .art-frame:hover {
+            transform: scale(1.01);
+        }
+
+        .art-frame svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .art-frame.zoomed {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            border-radius: 0;
+            border: none;
+            cursor: zoom-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.95);
+            transform: none;
+            overflow: auto;
+        }
+
+        .art-frame.zoomed svg {
+            width: min(90vw, 90vh);
+            height: min(90vw, 90vh);
+        }
+
+        .zoom-hint {
+            position: absolute;
+            bottom: 14px;
+            right: 14px;
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(201, 168, 76, 0.55);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .art-thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .thumb {
+            width: 68px;
+            height: 68px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s, transform 0.2s;
+        }
+
+        .thumb svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .thumb:hover {
+            transform: scale(1.05);
+        }
+
+        .thumb.active {
+            border-color: var(--gold);
+        }
+
+        .art-info-side {}
+
+        .art-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.68rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        .art-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 30%, var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            line-height: 1.15;
+        }
+
+        .art-price-big {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .art-divider {
+            height: 1px;
+            background: linear-gradient(90deg, var(--gold-dark), transparent);
+            margin-bottom: 22px;
+        }
+
+        .art-desc {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            line-height: 1.75;
+            margin-bottom: 26px;
+        }
+
+        .art-specs {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 26px;
+        }
+
+        .spec-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+        }
+
+        .spec-row:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            font-size: 0.68rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            min-width: 90px;
+        }
+
+        .spec-val {
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .btn-buy {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #128C7E, #25D366);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border-radius: 12px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            margin-bottom: 12px;
+            transition: box-shadow 0.3s, transform 0.2s;
+        }
+
+        .btn-buy:hover {
+            box-shadow: 0 0 30px rgba(37, 211, 102, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-enquire {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-radius: 12px;
+            text-decoration: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: border-color 0.3s, color 0.3s, background 0.3s;
+        }
+
+        .btn-enquire:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+            background: rgba(201, 168, 76, 0.07);
+        }
+
+        .delivery-note {
+            background: rgba(0, 201, 177, 0.06);
+            border: 1px solid rgba(0, 201, 177, 0.15);
+            border-radius: 12px;
+            padding: 16px 18px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .related-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5% 80px;
+        }
+
+        .related-title-h {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            background: linear-gradient(135deg, #fff, var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        .related-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s, border-color 0.3s;
+            display: block;
+        }
+
+        .related-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(201, 168, 76, 0.35);
+        }
+
+        .related-img {
+            aspect-ratio: 1;
+            overflow: hidden;
+        }
+
+        .related-img svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .related-info {
+            padding: 12px 14px;
+        }
+
+        .related-title-t {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .related-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.95rem;
+            color: var(--gold-light);
+        }
+
+        /* ══════════════════════════════════════
+       ABOUT / STORY SECTION
+    ══════════════════════════════════════ */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-visual {
+            position: relative;
+        }
+
+        .about-mandala-wrap {
+            width: 100%;
+            aspect-ratio: 1;
+            max-width: 440px;
+            margin: 0 auto;
+            animation: slowSpin 40s linear infinite;
+        }
+
+        .about-text {}
+
+        .about-text .section-title {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .about-text .section-eyebrow {
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .about-body {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.85;
+            margin-bottom: 18px;
+        }
+
+        .about-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .about-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            background: rgba(201, 168, 76, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        /* ══════════════════════════════════════
+       CONTACT SECTION
+    ══════════════════════════════════════ */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: start;
+        }
+
+        .contact-info {}
+
+        .contact-info h2 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .contact-info p {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        .contact-items {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-decoration: none;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .contact-item:hover {
+            border-color: var(--gold);
+            background: rgba(201, 168, 76, 0.05);
+        }
+
+        .contact-item-icon {
+            font-size: 1.4rem;
+            width: 40px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .contact-item-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 2px;
+        }
+
+        .contact-item-val {
+            font-size: 0.88rem;
+            color: var(--text-main);
+        }
+
+        .contact-form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px 32px;
+        }
+
+        .contact-form-card h3 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .contact-form-card p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.68rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            appearance: none;
+        }
+
+        .form-textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: #1a1000;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: box-shadow 0.3s, transform 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            box-shadow: 0 0 24px rgba(201, 168, 76, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .form-success {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: var(--turquoise);
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.05rem;
+        }
+
+        /* ══════════════════════════════════════
+       FLOATING WHATSAPP
+    ══════════════════════════════════════ */
+        #float-wa {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 600;
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #128C7E, #25D366);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 24px rgba(37, 211, 102, 0.4);
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        #float-wa:hover {
+            transform: scale(1.12);
+            box-shadow: 0 8px 32px rgba(37, 211, 102, 0.6);
+        }
+
+        #float-wa svg {
+            width: 26px;
+            height: 26px;
+            fill: #fff;
+        }
+
+        /* WA PULSE RING */
+        #float-wa::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 2px solid rgba(37, 211, 102, 0.4);
+            animation: waPulse 2s ease-out infinite;
+        }
+
+        @keyframes waPulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* ══════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════ */
+        footer {
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border);
+            padding: 50px 5% 30px;
+        }
+
+        .footer-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand {}
+
+        .footer-logo {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .footer-tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            max-width: 240px;
+        }
+
+        .footer-col h4 {
+            font-size: 0.68rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 16px;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold-light);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding-top: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-copy {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            letter-spacing: 0.08em;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: border-color 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+
+        .social-btn:hover {
+            border-color: var(--gold);
+            background: rgba(201, 168, 76, 0.08);
+        }
+
+        /* ══════════════════════════════════════
+       BACK TO TOP
+    ══════════════════════════════════════ */
+        #back-to-top {
+            position: fixed;
+            bottom: 90px;
+            right: 28px;
+            z-index: 600;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s, transform 0.3s, border-color 0.2s, color 0.2s;
+        }
+
+        #back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #back-to-top:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* ══════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════ */
+        @media (max-width: 1024px) {
+            .footer-top {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-visual {
+                order: -1;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            #hamburger {
+                display: flex;
+            }
+
+            .hero-stats {
+                gap: 24px;
+            }
+
+            .artworks-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+
+            .detail-wrap {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding-top: calc(var(--nav-h) + 20px);
+            }
+
+            .footer-top {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+
+            .process-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .artworks-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .hero-stats {
+                gap: 20px;
+            }
+
+            .stat-num {
+                font-size: 1.5rem;
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══ CURSOR GLOW ══ -->
+    <div id="cursor-glow"></div>
+
+    <!-- ══ PAGE TRANSITION ══ -->
+    <div id="page-transition"></div>
+
+    <!-- ══════════════════════════════
+     LOADER
+══════════════════════════════ -->
+    <div id="loader">
+        <div class="bp-grid"></div>
+        <span class="bp-label" id="bp-label">Initializing Sacred Geometry…</span>
+
+        <div class="mandala-svg-wrap">
+            <svg class="mandala-loader-svg" id="loaderSvg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                <circle class="ring r1" cx="150" cy="150" r="140" />
+                <circle class="ring r2" cx="150" cy="150" r="115" />
+                <circle class="ring r3" cx="150" cy="150" r="92" />
+                <circle class="ring r4" cx="150" cy="150" r="68" />
+                <circle class="ring r5" cx="150" cy="150" r="46" />
+                <circle class="ring r6" cx="150" cy="150" r="26" />
+                <g class="petals">
+                    <path d="M150,150 Q185,100 150,10 Q115,100 150,150" />
+                    <path d="M150,150 Q200,185 290,150 Q200,115 150,150" />
+                    <path d="M150,150 Q115,200 150,290 Q185,200 150,150" />
+                    <path d="M150,150 Q100,115 10,150 Q100,185 150,150" />
+                    <path d="M150,150 Q188,112 256,56 Q194,124 150,150" />
+                    <path d="M150,150 Q188,188 244,244 Q176,188 150,150" />
+                    <path d="M150,150 Q112,188 56,244 Q124,182 150,150" />
+                    <path d="M150,150 Q112,112 56,56 Q122,126 150,150" />
+                </g>
+            </svg>
+        </div>
+
+        <div class="loader-bar-wrap">
+            <div class="loader-pct" id="loaderPct">0%</div>
+            <div class="loader-bar-bg">
+                <div class="loader-bar" id="loaderBar"></div>
+            </div>
+        </div>
+
+        <div id="logoReveal">
+            <img src="logo1.jpeg" alt="The Dharanika Artverse Logo" class="logo-reveal-img" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+            <span class="logo-reveal-title">The Dharanika Artverse</span>
+            <span class="logo-reveal-sub">Sacred Art, Handcrafted</span>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════
+     NAVBAR
+══════════════════════════════ -->
+    <nav id="navbar">
+        <img src="logo1.jpeg" alt="The Dharanika Artverse Logo" class="logo-reveal-img" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px;">
+        <span class="nav-logo" onclick="navigate('home')">The Dharanika Artverse</span>
+        <ul class="nav-links">
+            <li><a onclick="navigate('home')" class="active" id="nav-home">Home</a></li>
+            <li><a onclick="navigate('gallery')" id="nav-gallery">Gallery</a></li>
+            <li><a onclick="scrollToSection('process')" id="nav-process">Process</a></li>
+            <li><a onclick="navigate('about')" id="nav-about">About</a></li>
+            <li><a onclick="navigate('contact')" id="nav-contact">Contact</a></li>
+        </ul>
+        <div class="nav-cta">
+            <a href="https://wa.me/916369755991?text=Hi%2C+I+would+like+to+order+custom+Mandala+Art." target="_blank"
+                class="btn-wa-nav">Order Now</a>
+            <button id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div id="mobileMenu">
+        <a onclick="navigate('home'); closeMenu()">Home</a>
+        <a onclick="navigate('gallery'); closeMenu()">Gallery</a>
+        <a onclick="scrollToSection('process'); closeMenu()">Process</a>
+        <a onclick="navigate('about'); closeMenu()">About</a>
+        <a onclick="navigate('contact'); closeMenu()">Contact</a>
+        <a href="https://wa.me/916369755991?text=Hi%2C+I+would+like+to+order+custom+Mandala+Art." target="_blank">Order
+            on WhatsApp ↗</a>
+    </div>
+
+    <!-- ══════════════════════════════
+     VIEW: HOME
+══════════════════════════════ -->
+    <div id="view-home" class="view active">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-bg">
+                <div class="hero-orb hero-orb-1"></div>
+                <div class="hero-orb hero-orb-2"></div>
+                <svg class="hero-bg-mandala" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="250" cy="250" r="240" fill="none" stroke="#C9A84C" stroke-width="0.8" />
+                    <circle cx="250" cy="250" r="200" fill="none" stroke="#7B3FA0" stroke-width="0.6" />
+                    <circle cx="250" cy="250" r="160" fill="none" stroke="#00C9B1" stroke-width="0.6" />
+                    <circle cx="250" cy="250" r="120" fill="none" stroke="#C9A84C" stroke-width="0.5" />
+                    <circle cx="250" cy="250" r="80" fill="none" stroke="#7B3FA0" stroke-width="0.5" />
+                    <circle cx="250" cy="250" r="40" fill="none" stroke="#00C9B1" stroke-width="0.4" />
+                    <g id="heroLines"></g>
+                </svg>
+            </div>
+            <div class="hero-content">
+                <div class="hero-eyebrow">Sacred Geometry · Handcrafted Art</div>
+                <h1 class="hero-title" style="padding: 10px;">Where The Dharanika Artverse<br>Meet Magic</h1>
+                <p class="hero-desc">Premium handcrafted mandala art — born from meditation, drawn with devotion. Each
+                    piece tells a story written in circles and sacred symmetry.</p>
+                <div class="hero-actions">
+                    <span class="btn-primary" onclick="navigate('gallery')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" />
+                            <rect x="14" y="3" width="7" height="7" />
+                            <rect x="3" y="14" width="7" height="7" />
+                            <rect x="14" y="14" width="7" height="7" />
+                        </svg>
+                        Explore Gallery
+                    </span>
+                    <a href="https://wa.me/916369755991?text=Hi%2C+I+want+a+custom+Mandala+Art+piece." target="_blank"
+                        class="btn-outline">
+                        Commission Custom Art
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-num">200+</span>
+                        <span class="stat-label">Pieces Created</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">150+</span>
+                        <span class="stat-label">Happy Clients</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">5★</span>
+                        <span class="stat-label">Avg Rating</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">8+</span>
+                        <span class="stat-label">Years of Art</span>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="scroll-mouse">
+                    <div class="scroll-dot"></div>
+                </div>
+                <span>Scroll</span>
+            </div>
+        </section>
+
+        <!-- FEATURED ARTWORKS -->
+        <section class="section">
+            <div class="section-header fade-in">
+                <span class="section-eyebrow">✦ Curated Collection</span>
+                <h2 class="section-title">Featured Artworks</h2>
+                <p class="section-sub">A glimpse into the studio — each piece a universe of its own</p>
+                <div class="gold-line"></div>
+            </div>
+            <div class="artworks-grid" id="featuredGrid"></div>
+            <div class="center-cta fade-in">
+                <span class="btn-primary" onclick="navigate('gallery')">View Full Gallery →</span>
+            </div>
+        </section>
+
+        <!-- PROCESS -->
+        <section class="section" id="process"
+            style="background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(61,26,110,0.12) 0%, transparent 70%);">
+            <div class="section-header fade-in">
+                <span class="section-eyebrow">✦ How It Works</span>
+                <h2 class="section-title">The Creation Process</h2>
+                <p class="section-sub">From a conversation to a piece that hangs on your wall — here's the journey</p>
+                <div class="gold-line"></div>
+            </div>
+            <div class="process-grid">
+                <div class="process-card fade-in fade-in-delay-1">
+                    <span class="process-icon">💬</span>
+                    <div class="process-num">01</div>
+                    <div class="process-name">We Connect</div>
+                    <p class="process-desc">Reach out via WhatsApp. Share your vision, preferred size, colours, and the
+                        feeling you want the piece to carry.</p>
+                </div>
+                <div class="process-card fade-in fade-in-delay-2">
+                    <span class="process-icon">✏️</span>
+                    <div class="process-num">02</div>
+                    <div class="process-name">Sketch & Plan</div>
+                    <p class="process-desc">A rough blueprint is created — ring geometry, petal count, and symmetry are
+                        all planned before a single stroke hits paper.</p>
+                </div>
+                <div class="process-card fade-in fade-in-delay-3">
+                    <span class="process-icon">🖌️</span>
+                    <div class="process-num">03</div>
+                    <div class="process-name">The Drawing Begins</div>
+                    <p class="process-desc">Layer by layer, working outward from the seed centre — each ring drawn
+                        freehand with precision pens or brushes.</p>
+                </div>
+                <div class="process-card fade-in fade-in-delay-4">
+                    <span class="process-icon">🎨</span>
+                    <div class="process-num">04</div>
+                    <div class="process-name">Colour & Detail</div>
+                    <p class="process-desc">Sacred pigments are added — watercolour washes, gold leaf, or acrylic
+                        accents breathe life into every circle.</p>
+                </div>
+                <div class="process-card fade-in fade-in-delay-5">
+                    <span class="process-icon">📦</span>
+                    <div class="process-num">05</div>
+                    <div class="process-name">Packed & Shipped</div>
+                    <p class="process-desc">Acid-free tissue wrap, rigid packaging, and tracked courier delivery — your
+                        art arrives as it left the studio.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHY US -->
+        <section class="section">
+            <div class="section-header fade-in">
+                <span class="section-eyebrow">✦ Why MandalaVerse</span>
+                <h2 class="section-title">The Studio Promise</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="why-grid">
+                <div class="why-card fade-in fade-in-delay-1">
+                    <span class="why-icon">🤲</span>
+                    <div class="why-title">100% Handcrafted</div>
+                    <p class="why-desc">Every circle drawn freehand. No stencils, no machines — only meditative
+                        precision.</p>
+                </div>
+                <div class="why-card fade-in fade-in-delay-2">
+                    <span class="why-icon">✨</span>
+                    <div class="why-title">Premium Materials</div>
+                    <p class="why-desc">Archival paper, professional-grade pigments, and real 24K gold leaf on select
+                        pieces.</p>
+                </div>
+                <div class="why-card fade-in fade-in-delay-3">
+                    <span class="why-icon">🎯</span>
+                    <div class="why-title">Custom Orders</div>
+                    <p class="why-desc">Commission a piece tailored to your space, your colours, and your story.</p>
+                </div>
+                <div class="why-card fade-in fade-in-delay-4">
+                    <span class="why-icon">🚚</span>
+                    <div class="why-title">Safe Delivery</div>
+                    <p class="why-desc">Carefully packed and shipped across India with tracking and handling guarantee.
+                    </p>
+                </div>
+                <div class="why-card fade-in fade-in-delay-5">
+                    <span class="why-icon">🔄</span>
+                    <div class="why-title">Revision Support</div>
+                    <p class="why-desc">Custom commissions include a revision round to ensure you love every detail.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TESTIMONIALS -->
+        <section class="section" style="overflow:hidden">
+            <div class="section-header fade-in">
+                <span class="section-eyebrow">✦ Client Stories</span>
+                <h2 class="section-title">What People Say</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="testimonials-wrap fade-in">
+                <div class="testimonials-track" id="testimonialTrack">
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                        <p class="testimonial-text">The Cosmic Bloom piece I commissioned is the most beautiful thing in
+                            my home. The detail work is beyond what I imagined — you can spend hours discovering new
+                            patterns.</p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">🌸</div>
+                            <div>
+                                <div class="testimonial-name">Priya Sharma</div>
+                                <div class="testimonial-loc">Mumbai · Interior Designer</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                        <p class="testimonial-text">Ordered the Devi Shakti canvas for my mother's birthday. She was
+                            moved to tears. The gold leaf accents glow in sunlight — it's truly a sacred object.</p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">🌙</div>
+                            <div>
+                                <div class="testimonial-name">Arjun Nair</div>
+                                <div class="testimonial-loc">Bangalore · Software Engineer</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                        <p class="testimonial-text">Super fast delivery and the packaging was exceptional — the piece
+                            arrived in perfect condition. Ocean Serenity now hangs in my meditation space. Pure magic.
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">🌊</div>
+                            <div>
+                                <div class="testimonial-name">Kavya Reddy</div>
+                                <div class="testimonial-loc">Chennai · Yoga Teacher</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                        <p class="testimonial-text">I've ordered three pieces now and each one surpasses the last. The
+                            Sacred Geometry piece in my living room gets compliments from every single guest.</p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">⭐</div>
+                            <div>
+                                <div class="testimonial-name">Rajan Mehta</div>
+                                <div class="testimonial-loc">Delhi · Architect</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                        <p class="testimonial-text">Commissioned a custom piece for my clinic waiting room — patients
+                            comment on it every day. The calming effect is real. Worth every rupee.</p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">🏥</div>
+                            <div>
+                                <div class="testimonial-name">Dr. Anitha Krishnan</div>
+                                <div class="testimonial-loc">Coimbatore · Physician</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonials-nav">
+                    <button class="t-nav-btn" onclick="testimonialPrev()">←</button>
+                    <div class="t-dots" id="tDots"></div>
+                    <button class="t-nav-btn" onclick="testimonialNext()">→</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA BAND -->
+        <div class="cta-band fade-in" style="margin-bottom: 80px;">
+            <h2>Ready for Your Own Sacred Art?</h2>
+            <p>Commission a custom mandala — designed around your vision, your space, your energy.</p>
+            <div class="cta-band-actions">
+                <a href="https://wa.me/916369755991?text=Hi%2C+I+want+to+commission+a+custom+Mandala+Art+piece."
+                    target="_blank" class="btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                    </svg>
+                    Start My Commission
+                </a>
+                <span class="btn-outline" onclick="navigate('gallery')">Browse Gallery</span>
+            </div>
+        </div>
+
+        <div id="footer-home"></div>
+    </div>
+
+    <!-- ══════════════════════════════
+     VIEW: GALLERY
+══════════════════════════════ -->
+    <div id="view-gallery" class="view">
+        <div class="gallery-header">
+            <h1>The Full Gallery</h1>
+            <p>Every handcrafted piece — original The Dharanika Artverse born from imagination</p>
+        </div>
+
+        <div class="gallery-controls">
+            <div class="search-bar-wrap">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="text" class="search-bar" id="searchBar" placeholder="Search by name, medium, or style…">
+            </div>
+            <div class="filters" id="filters">
+                <button class="filter-btn active" data-cat="all">All Works</button>
+                <button class="filter-btn" data-cat="pen">Pen & Ink</button>
+                <button class="filter-btn" data-cat="watercolor">Watercolor</button>
+                <button class="filter-btn" data-cat="digital">Digital</button>
+                <button class="filter-btn" data-cat="canvas">Canvas</button>
+                <button class="filter-btn" data-cat="mixed">Mixed Media</button>
+            </div>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid"></div>
+        <div class="no-results" id="noResults" style="display:none">No artworks match your search. Try a different term
+            or clear the filter.</div>
+
+        <div id="footer-gallery"></div>
+    </div>
+
+    <!-- ══════════════════════════════
+     VIEW: ARTWORK DETAIL
+══════════════════════════════ -->
+    <div id="view-detail" class="view">
+        <div class="detail-wrap" id="detailWrap"></div>
+        <div class="related-section">
+            <div class="related-title-h">You May Also Like</div>
+            <div class="related-grid" id="relatedGrid"></div>
+        </div>
+        <div id="footer-detail"></div>
+    </div>
+
+    <!-- ══════════════════════════════
+     VIEW: ABOUT
+══════════════════════════════ -->
+    <div id="view-about" class="view">
+        <section class="section" style="padding-top: calc(var(--nav-h) + 60px);">
+            <div class="about-grid">
+                <div class="about-visual fade-in">
+                    <div class="about-mandala-wrap" id="aboutMandalaWrap"></div>
+                </div>
+                <div class="about-text fade-in fade-in-delay-2">
+                    <span class="section-eyebrow">✦ The Artist</span>
+                    <h2 class="section-title">Drawing Circles Since Childhood</h2>
+                    <p class="about-body">The Dharanika Artverse was born from a single midnight session — a circle drawn
+                        on notebook paper that never quite closed, then another, and another. What began as meditation
+                        became craft, craft became calling.</p>
+                    <p class="about-body">Every mandala is a map of stillness. I work in meditative silence, beginning
+                        always at the seed centre and moving outward — the way consciousness itself unfolds. No two
+                        pieces share the same geometry. Each is drawn in a single devoted session, usually lasting 8 to
+                        20 hours.</p>
+                    <p class="about-body">The studio ships across India. I work with individuals, families, interior
+                        designers, yoga studios, and anyone who believes that walls should speak.</p>
+                    <div class="about-badges">
+                        <span class="about-badge">🖊 Freehand Only</span>
+                        <span class="about-badge">🏅 8+ Years Active</span>
+                        <span class="about-badge">📦 Ships Pan-India</span>
+                        <span class="about-badge">🌿 Archival Materials</span>
+                        <span class="about-badge">🤍 200+ Commissions</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VALUES -->
+        <section class="section" style="padding-top: 0;">
+            <div class="section-header fade-in">
+                <span class="section-eyebrow">✦ Studio Values</span>
+                <h2 class="section-title">What This Work Stands For</h2>
+                <div class="gold-line"></div>
+            </div>
+            <div class="why-grid">
+                <div class="why-card fade-in fade-in-delay-1">
+                    <span class="why-icon">🌀</span>
+                    <div class="why-title">Meditative Making</div>
+                    <p class="why-desc">Art created in silence carries a quality that's felt before it's seen. Every
+                        piece is drawn in a meditative state.</p>
+                </div>
+                <div class="why-card fade-in fade-in-delay-2">
+                    <span class="why-icon">🧬</span>
+                    <div class="why-title">Sacred Geometry</div>
+                    <p class="why-desc">The mathematical patterns underlying all creation — circles, phi ratios, and
+                        symmetry — are at the heart of every design.</p>
+                </div>
+                <div class="why-card fade-in fade-in-delay-3">
+                    <span class="why-icon">♻️</span>
+                    <div class="why-title">Conscious Materials</div>
+                    <p class="why-desc">Acid-free paper, non-toxic pigments, and sustainably sourced materials wherever
+                        possible.</p>
+                </div>
+                <div class="why-card fade-in fade-in-delay-4">
+                    <span class="why-icon">💌</span>
+                    <div class="why-title">Personal Connection</div>
+                    <p class="why-desc">Every commission begins with a conversation. I need to understand your story
+                        before I draw your mandala.</p>
+                </div>
+            </div>
+        </section>
+
+        <div id="footer-about"></div>
+    </div>
+
+    <!-- ══════════════════════════════
+     VIEW: CONTACT
+══════════════════════════════ -->
+    <div id="view-contact" class="view">
+        <section class="section" style="padding-top: calc(var(--nav-h) + 60px);">
+            <div class="section-header fade-in">
+                <span class="section-eyebrow">✦ Get in Touch</span>
+                <h2 class="section-title">Let's Create Together</h2>
+                <p class="section-sub">Whether it's a commission, a question, or just curiosity — the studio door is
+                    always open.</p>
+                <div class="gold-line"></div>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info fade-in">
+                    <h2>Reach the Studio</h2>
+                    <p>Every great piece starts with a conversation. Describe your vision and we'll figure out how to
+                        bring it to life.</p>
+                    <div class="contact-items">
+                        <a class="contact-item" href="https://wa.me/916369755991" target="_blank">
+                            <span class="contact-item-icon">💬</span>
+                            <div>
+                                <div class="contact-item-label">WhatsApp (Preferred)</div>
+                                <div class="contact-item-val">+91 99999 99999</div>
+                            </div>
+                        </a>
+                        <a class="contact-item" href="mailto:hello@mandalaversestudio.com">
+                            <span class="contact-item-icon">✉️</span>
+                            <div>
+                                <div class="contact-item-label">Email</div>
+                                <div class="contact-item-val">hello@mandalaversestudio.com</div>
+                            </div>
+                        </a>
+                        <div class="contact-item">
+                            <span class="contact-item-icon">📍</span>
+                            <div>
+                                <div class="contact-item-label">Location</div>
+                                <div class="contact-item-val">Salem, Tamil Nadu — Ships Pan-India</div>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-item-icon">🕐</span>
+                            <div>
+                                <div class="contact-item-label">Response Time</div>
+                                <div class="contact-item-val">Usually within 2–4 hours on WhatsApp</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="fade-in fade-in-delay-2">
+                    <div class="contact-form-card">
+                        <h3>Send a Message</h3>
+                        <p>Fill in below and I'll reply via email or WhatsApp.</p>
+                        <div id="contactForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Your Name</label>
+                                    <input type="text" class="form-input" id="fname" placeholder="Priya Sharma">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-input" id="femail" placeholder="you@email.com">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Subject</label>
+                                <select class="form-select" id="fsubject">
+                                    <option value="">Select a subject…</option>
+                                    <option>Commission a Custom Mandala</option>
+                                    <option>Purchase an Existing Artwork</option>
+                                    <option>Pricing & Sizes Enquiry</option>
+                                    <option>Corporate / Bulk Order</option>
+                                    <option>General Question</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Message</label>
+                                <textarea class="form-textarea" id="fmessage"
+                                    placeholder="Tell me about your vision — preferred size, colours, the space it will live in…"></textarea>
+                            </div>
+                            <button class="btn-submit" onclick="submitForm()">Send Message</button>
+                        </div>
+                        <div class="form-success" id="formSuccess">
+                            ✦ Message sent! I'll be in touch within a few hours. <br>For faster response, WhatsApp is
+                            always open. 🙏
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div id="footer-contact"></div>
+    </div>
+
+    <!-- ══ FLOATING WA ══ -->
+    <a id="float-wa"
+        href="https://wa.me/916369755991?text=Hi%2C+I+would+like+to+know+more+about+your+Mandala+Art+services."
+        target="_blank" aria-label="WhatsApp">
+        <svg viewBox="0 0 24 24">
+            <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+        </svg>
+    </a>
+
+    <!-- ══ BACK TO TOP ══ -->
+    <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
+
+    <!-- ══ FOOTER TEMPLATE ══ -->
+    <template id="footerTpl">
+        <footer>
+            <div class="footer-inner">
+                <div class="footer-top">
+                    <div class="footer-brand">
+                        <span class="footer-logo">The Dharanika Artverse</span>
+                        <p class="footer-tagline">Sacred geometry drawn with devotion — from Salem, Tamil Nadu to walls
+                            across India.</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Navigate</h4>
+                        <ul class="footer-links">
+                            <li><a onclick="navigate('home')">Home</a></li>
+                            <li><a onclick="navigate('gallery')">Gallery</a></li>
+                            <li><a onclick="navigate('about')">About</a></li>
+                            <li><a onclick="navigate('contact')">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Services</h4>
+                        <ul class="footer-links">
+                            <li><a>Custom Commissions</a></li>
+                            <li><a>Pen & Ink The Dharanika Artverse</a></li>
+                            <li><a>Watercolor Art</a></li>
+                            <li><a>Canvas Paintings</a></li>
+                            <li><a>Digital Prints</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Contact</h4>
+                        <ul class="footer-links">
+                            <li><a href="https://wa.me/916369755991" target="_blank">WhatsApp</a></li>
+                            <li><a href="mailto:hello@mandalaversestudio.com">Email Studio</a></li>
+                            <li><a>Salem, Tamil Nadu</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <span class="footer-copy">© 2025 The Dharanika Artverse. All rights reserved.</span>
+                    <div class="footer-social">
+                        <a class="social-btn" href="#" title="Instagram">📸</a>
+                        <a class="social-btn" href="#" title="Pinterest">📌</a>
+                        <a class="social-btn" href="https://wa.me/916369755991" target="_blank" title="WhatsApp">💬</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </template>
+
+    <!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+    <script>
+        // ═══════════════════════════
+        // ARTWORK DATA
+        // ═══════════════════════════
+        const artworks = [
+            { id: 1, title: "Cosmic Bloom", price: "₹1,800", cat: "pen", size: "A3 (29×42 cm)", medium: "Pen & Ink on Paper", desc: "A mesmerizing mandala inspired by the unfolding of a cosmic flower, featuring intricate petal layers radiating from a luminous centre. Each stroke was drawn freehand over 14 hours of meditative work.", delivery: "7–10 working days. Carefully packed and shipped via courier.", color1: "#C9A84C", color2: "#7B3FA0", color3: "#F0D080" },
+            { id: 2, title: "Ocean Serenity", price: "₹2,200", cat: "watercolor", size: "A2 (42×59 cm)", medium: "Watercolor & Ink", desc: "Inspired by the calmness of deep ocean waters, this mandala blends flowing watercolor washes of turquoise and teal with fine ink detailing. A piece that brings stillness to any room.", delivery: "10–14 working days. Shipped rolled in a protective tube.", color1: "#00C9B1", color2: "#007A6C", color3: "#4DECD8" },
+            { id: 3, title: "Royal Lotus", price: "₹1,500", cat: "digital", size: "A4 (21×29 cm)", medium: "Digital Print (HD)", desc: "A regal mandala centred on the sacred lotus — symbol of purity and enlightenment. Rendered digitally in deep purples and gold, available as a high-resolution print.", delivery: "Digital file within 3 days. Print shipping: 5–7 days.", color1: "#B06FD8", color2: "#3D1A6E", color3: "#C9A84C" },
+            { id: 4, title: "Golden Sunrise", price: "₹3,500", cat: "canvas", size: "A1 (59×84 cm)", medium: "Acrylic on Canvas", desc: "A large statement piece capturing the warmth and energy of a golden sunrise through radial mandala geometry. Perfect as a centrepiece for living rooms, offices, or meditation spaces.", delivery: "14–21 working days. Framed and delivered with protective packaging.", color1: "#F0D080", color2: "#C9A84C", color3: "#FF8C42" },
+            { id: 5, title: "Midnight Garden", price: "₹1,200", cat: "pen", size: "A4 (21×29 cm)", medium: "Pen & Ink on Paper", desc: "Delicate floral mandala patterns bloom against an inky black background, creating a dreamlike garden that glows on dark walls. Ultra-fine 0.05mm micron pens for incredible detail density.", delivery: "7–10 working days. Shipped in a rigid envelope.", color1: "#B06FD8", color2: "#00C9B1", color3: "#ffffff" },
+            { id: 6, title: "Celestial Map", price: "₹2,800", cat: "mixed", size: "A2 (42×59 cm)", medium: "Mixed Media", desc: "A cosmic mandala mapping the movement of planets and stars through concentric geometric patterns. Gold ink on deep indigo paper, with constellation markers and orbital paths in precise geometric form.", delivery: "10–14 working days.", color1: "#C9A84C", color2: "#3D1A6E", color3: "#4DECD8" },
+            { id: 7, title: "Devi Shakti", price: "₹4,200", cat: "canvas", size: "Custom", medium: "Acrylic + Gold Leaf on Canvas", desc: "A devotional mandala portrait honouring the divine feminine energy — Shakti. Features real 24K gold leaf accents around the crown, with hand-painted acrylic details on stretched canvas.", delivery: "21–28 working days. Custom framing available.", color1: "#C9A84C", color2: "#B06FD8", color3: "#FF6B8A" },
+            { id: 8, title: "Forest Whispers", price: "₹1,650", cat: "watercolor", size: "A3 (29×42 cm)", medium: "Watercolor & Ink", desc: "A nature-inspired mandala weaving leaves, ferns, and forest motifs into a calming circular tapestry of greens and earth tones. Captures the quiet wisdom of old-growth forests.", delivery: "7–10 working days.", color1: "#4DECD8", color2: "#007A6C", color3: "#8BC34A" },
+            { id: 9, title: "Desert Rose", price: "₹1,900", cat: "pen", size: "A3", medium: "Pen & Ink", desc: "Inspired by blooms that thrive in arid landscapes — fine linework mandala with warm desert tones. Each petal drawn with architectural precision to create a sense of vast, sun-warmed space.", delivery: "7–10 working days.", color1: "#E07B54", color2: "#C9A84C", color3: "#F0D080" },
+            { id: 10, title: "Lunar Cycle", price: "₹2,100", cat: "digital", size: "A2 print", medium: "Digital Print (HD)", desc: "Eight phases of the moon woven into a seamless mandala circle — minimalist and meditative. Perfect for bedrooms and meditation rooms. Available in both dark and light colourways.", delivery: "Digital: 3 days. Print: 5–7 days.", color1: "#EDE8F5", color2: "#5C5770", color3: "#C9A84C" },
+            { id: 11, title: "Sacred Geometry", price: "₹3,000", cat: "mixed", size: "A1", medium: "Mixed Media on Paper", desc: "Platonic solids, Flower of Life patterns, and Metatron's Cube interwoven into a masterful mandala on heavyweight cartridge paper. For those who seek the mathematical beauty beneath all creation.", delivery: "14–21 working days.", color1: "#C9A84C", color2: "#00C9B1", color3: "#B06FD8" },
+            { id: 12, title: "Cherry Blossom", price: "₹1,350", cat: "watercolor", size: "A4", medium: "Watercolor & Ink", desc: "Soft pink sakura petals radiating outward in a gentle mandala spiral — delicate and poetic. Created with Japanese watercolours on cold-press paper to capture the ephemeral beauty of spring.", delivery: "7–10 working days.", color1: "#F4A7B9", color2: "#B06FD8", color3: "#F0D080" },
+        ];
+
+        const catLabels = { pen: "Pen & Ink", watercolor: "Watercolor", digital: "Digital", canvas: "Canvas", mixed: "Mixed Media" };
+
+        // ═══════════════════════════
+        // MANDALA SVG GENERATORS
+        // ═══════════════════════════
+        function makeMandala(a, size = 240, detail = 'normal') {
+            const c = size / 2, r = size * 0.42;
+            const rings = [0.95, 0.78, 0.62, 0.46, 0.3, 0.16];
+            const strokes = [a.color1, a.color2, a.color3, a.color1, a.color2, a.color3];
+            const petalN = detail === 'high' ? 12 : 8;
+            const innerN = detail === 'high' ? 16 : 12;
+            const id = a.id + '_' + size;
+
+            let svg = `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg${id}" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:${a.color2};stop-opacity:0.38"/>
+      <stop offset="100%" style="stop-color:#060810;stop-opacity:1"/>
+    </radialGradient>
+    ${detail === 'high' ? `<filter id="glow${id}"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>` : ''}
+  </defs>
+  <rect width="${size}" height="${size}" fill="url(#bg${id})"/>`;
+
+            rings.forEach((rr, i) => {
+                const glowAttr = detail === 'high' && i < 2 ? ` filter="url(#glow${id})"` : '';
+                svg += `<circle cx="${c}" cy="${c}" r="${r * rr}" fill="none" stroke="${strokes[i]}" stroke-width="${i === 0 ? 1.8 : 1.2}" opacity="${0.5 + i * 0.09}"${glowAttr}/>`;
+            });
+
+            // Outer petal ring
+            for (let i = 0; i < petalN; i++) {
+                const ang = (i / petalN) * Math.PI * 2;
+                const pr = r * 0.78;
+                const nx = c + pr * Math.sin(ang), ny = c - pr * Math.cos(ang);
+                const bx = c + r * 0.55 * Math.sin(ang + 0.35), by = c - r * 0.55 * Math.cos(ang + 0.35);
+                const b2x = c + r * 0.55 * Math.sin(ang - 0.35), b2y = c - r * 0.55 * Math.cos(ang - 0.35);
+                svg += `<path d="M${c},${c} Q${bx},${by} ${nx},${ny} Q${b2x},${b2y} ${c},${c}" fill="${a.color1}" opacity="0.14"/>`;
+                svg += `<path d="M${c},${c} Q${bx},${by} ${nx},${ny} Q${b2x},${b2y} ${c},${c}" fill="none" stroke="${a.color1}" stroke-width="0.8" opacity="0.6"/>`;
+            }
+
+            if (detail === 'high') {
+                // Inner petal ring
+                for (let i = 0; i < 8; i++) {
+                    const ang = (i / 8) * Math.PI * 2 + Math.PI / 8;
+                    const pr = r * 0.46;
+                    const nx = c + pr * Math.sin(ang), ny = c - pr * Math.cos(ang);
+                    const bx = c + r * 0.32 * Math.sin(ang + 0.45), by = c - r * 0.32 * Math.cos(ang + 0.45);
+                    const b2x = c + r * 0.32 * Math.sin(ang - 0.45), b2y = c - r * 0.32 * Math.cos(ang - 0.45);
+                    svg += `<path d="M${c},${c} Q${bx},${by} ${nx},${ny} Q${b2x},${b2y} ${c},${c}" fill="${a.color2}" opacity="0.16"/>`;
+                    svg += `<path d="M${c},${c} Q${bx},${by} ${nx},${ny} Q${b2x},${b2y} ${c},${c}" fill="none" stroke="${a.color2}" stroke-width="0.8" opacity="0.5"/>`;
+                }
+            }
+
+            // Inner radial lines
+            for (let i = 0; i < innerN; i++) {
+                const ang = (i / innerN) * Math.PI * 2;
+                const x2 = c + r * 0.44 * Math.sin(ang), y2 = c - r * 0.44 * Math.cos(ang);
+                svg += `<line x1="${c}" y1="${c}" x2="${x2}" y2="${y2}" stroke="${a.color3}" stroke-width="0.6" opacity="0.42"/>`;
+            }
+
+            // Dot accents
+            for (let i = 0; i < 8; i++) {
+                const ang = (i / 8) * Math.PI * 2 + Math.PI / 8;
+                const dx = c + r * 0.62 * Math.sin(ang), dy = c - r * 0.62 * Math.cos(ang);
+                svg += `<circle cx="${dx}" cy="${dy}" r="${size * 0.009}" fill="${a.color2}" opacity="0.8"/>`;
+            }
+            if (detail === 'high') {
+                for (let i = 0; i < 12; i++) {
+                    const ang = (i / 12) * Math.PI * 2;
+                    const dx = c + r * 0.78 * Math.sin(ang), dy = c - r * 0.78 * Math.cos(ang);
+                    svg += `<circle cx="${dx}" cy="${dy}" r="${size * 0.006}" fill="${a.color3}" opacity="0.6"/>`;
+                }
+            }
+
+            const gf = detail === 'high' ? ` filter="url(#glow${id})"` : '';
+            svg += `<circle cx="${c}" cy="${c}" r="${size * 0.022}" fill="${a.color1}" opacity="0.92"${gf}/>`;
+            svg += `<circle cx="${c}" cy="${c}" r="${size * 0.01}" fill="#fff" opacity="0.55"/>`;
+            svg += `</svg>`;
+            return svg;
+        }
+
+        function makeThumb(a, size = 72) {
+            const c = size / 2, r = size * 0.42;
+            return `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+  <rect width="${size}" height="${size}" fill="#030508"/>
+  <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${a.color1}" stroke-width="1.2" opacity="0.85"/>
+  <circle cx="${c}" cy="${c}" r="${r * 0.65}" fill="none" stroke="${a.color2}" stroke-width="1" opacity="0.7"/>
+  <circle cx="${c}" cy="${c}" r="${r * 0.35}" fill="none" stroke="${a.color3}" stroke-width="0.8" opacity="0.7"/>
+  <circle cx="${c}" cy="${c}" r="4" fill="${a.color1}" opacity="0.9"/>
+  </svg>`;
+        }
+
+        // ═══════════════════════════
+        // SPA NAVIGATION
+        // ═══════════════════════════
+        let currentView = 'home';
+        let currentArtworkId = null;
+
+        function navigate(view, artworkId) {
+            if (view === currentView && view !== 'detail') return;
+            if (view === 'detail' && artworkId === currentArtworkId) return;
+
+            const transition = document.getElementById('page-transition');
+            transition.classList.add('flash');
+
+            setTimeout(() => {
+                showView(view, artworkId);
+                transition.classList.remove('flash');
+                window.scrollTo(0, 0);
+                initFadeObserver();
+            }, 260);
+        }
+
+        function showView(view, artworkId) {
+            document.querySelectorAll('.view').forEach(v => {
+                v.classList.remove('active');
+                v.style.display = 'none';
+            });
+
+            const el = document.getElementById('view-' + view);
+            if (!el) return;
+            el.style.display = 'block';
+            requestAnimationFrame(() => el.classList.add('active'));
+
+            currentView = view;
+            updateNavLinks(view);
+
+            if (view === 'gallery') renderGallery();
+            if (view === 'detail') renderDetail(artworkId);
+            if (view === 'about') renderAboutMandala();
+
+            injectFooter(view);
+        }
+
+        function updateNavLinks(view) {
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            const map = { home: 'nav-home', gallery: 'nav-gallery', about: 'nav-about', contact: 'nav-contact' };
+            if (map[view]) document.getElementById(map[view])?.classList.add('active');
+        }
+
+        function scrollToSection(id) {
+            if (currentView !== 'home') {
+                navigate('home');
+                setTimeout(() => {
+                    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+                }, 600);
+            } else {
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // ═══════════════════════════
+        // FOOTER INJECTION
+        // ═══════════════════════════
+        function injectFooter(view) {
+            const slots = { home: 'footer-home', gallery: 'footer-gallery', detail: 'footer-detail', about: 'footer-about', contact: 'footer-contact' };
+            const slot = document.getElementById(slots[view]);
+            if (slot && !slot.children.length) {
+                slot.appendChild(document.getElementById('footerTpl').content.cloneNode(true));
+            }
+        }
+
+        // ═══════════════════════════
+        // HOME: FEATURED GRID
+        // ═══════════════════════════
+        function renderFeatured() {
+            const grid = document.getElementById('featuredGrid');
+            artworks.slice(0, 8).forEach((a, i) => {
+                const card = document.createElement('div');
+                card.className = 'artwork-card fade-in';
+                card.style.transitionDelay = (i * 0.07) + 's';
+                card.innerHTML = `
+      <div class="artwork-img-wrap">
+        ${makeMandala(a, 260)}
+        <div class="artwork-overlay">
+          <button class="btn-view" onclick="navigate('detail', ${a.id})">View Artwork</button>
+        </div>
+      </div>
+      <div class="artwork-info">
+        <div class="artwork-title">${a.title}</div>
+        <div class="artwork-medium">${a.medium}</div>
+        <div class="artwork-bottom">
+          <span class="artwork-price">${a.price}</span>
+          <span class="artwork-tag">${catLabels[a.cat] || a.cat}</span>
+        </div>
+      </div>`;
+                card.addEventListener('click', e => {
+                    if (!e.target.closest('.btn-view')) navigate('detail', a.id);
+                });
+                grid.appendChild(card);
+            });
+        }
+
+        // ═══════════════════════════
+        // GALLERY
+        // ═══════════════════════════
+        let galleryFilter = 'all', gallerySearch = '', galleryRendered = false;
+
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            const noRes = document.getElementById('noResults');
+            const filtered = artworks.filter(a => {
+                const catOk = galleryFilter === 'all' || a.cat === galleryFilter;
+                const searchOk = !gallerySearch ||
+                    a.title.toLowerCase().includes(gallerySearch) ||
+                    a.medium.toLowerCase().includes(gallerySearch) ||
+                    (catLabels[a.cat] || a.cat).toLowerCase().includes(gallerySearch);
+                return catOk && searchOk;
+            });
+
+            grid.innerHTML = '';
+            if (!filtered.length) { noRes.style.display = 'block'; return; }
+            noRes.style.display = 'none';
+
+            filtered.forEach((a, i) => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card';
+                card.style.animationDelay = (i * 0.05) + 's';
+                card.innerHTML = `
+      <div class="card-img">
+        ${makeMandala(a, 220)}
+        <div class="card-overlay">
+          <button class="btn-detail" onclick="navigate('detail', ${a.id})">View Details</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${a.title}</div>
+        <div class="card-meta">
+          <span class="card-price">${a.price}</span>
+          <span class="card-cat">${catLabels[a.cat] || a.cat}</span>
+        </div>
+      </div>`;
+                card.addEventListener('click', e => {
+                    if (!e.target.closest('.btn-detail')) navigate('detail', a.id);
+                });
+                grid.appendChild(card);
+            });
+
+            if (!galleryRendered) {
+                const searchBar = document.getElementById('searchBar');
+                searchBar.addEventListener('input', e => {
+                    gallerySearch = e.target.value.toLowerCase().trim();
+                    renderGallery();
+                });
+
+                document.getElementById('filters').addEventListener('click', e => {
+                    const btn = e.target.closest('.filter-btn');
+                    if (!btn) return;
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    galleryFilter = btn.dataset.cat;
+                    renderGallery();
+                });
+                galleryRendered = true;
+            }
+        }
+
+        // ═══════════════════════════
+        // ARTWORK DETAIL
+        // ═══════════════════════════
+        function renderDetail(id) {
+            currentArtworkId = id;
+            const art = artworks.find(a => a.id === id) || artworks[0];
+            const wa = `https://wa.me/916369755991?text=Hi%2C%0AI+want+to+buy%3A%0AProduct%3A+${encodeURIComponent(art.title)}%0APrice%3A+${encodeURIComponent(art.price)}%0APlease+share+payment+details.`;
+            document.getElementById('float-wa').href = wa;
+
+            const wrap = document.getElementById('detailWrap');
+            wrap.innerHTML = `
+    <div class="art-img-side">
+      <div class="art-frame" id="artFrame">
+        ${makeMandala(art, 420, 'high')}
+        <div class="zoom-hint">🔍 Click to zoom</div>
+      </div>
+      <div class="art-thumbnails" id="thumbs">
+        ${artworks.slice(0, 6).map(a => `<div class="thumb ${a.id === art.id ? 'active' : ''}" data-id="${a.id}">${makeThumb(a)}</div>`).join('')}
+      </div>
+    </div>
+    <div class="art-info-side">
+      <span class="art-eyebrow">✦ Original Artwork</span>
+      <h1 class="art-title">${art.title}</h1>
+      <div class="art-price-big">${art.price}</div>
+      <div class="art-divider"></div>
+      <p class="art-desc">${art.desc}</p>
+      <div class="art-specs">
+        <div class="spec-row"><span class="spec-label">Medium</span><span class="spec-val">${art.medium}</span></div>
+        <div class="spec-row"><span class="spec-label">Size</span><span class="spec-val">${art.size}</span></div>
+        <div class="spec-row"><span class="spec-label">Category</span><span class="spec-val">${catLabels[art.cat] || art.cat}</span></div>
+        <div class="spec-row"><span class="spec-label">Availability</span><span class="spec-val" style="color:var(--turquoise)">✦ Available to Order</span></div>
+      </div>
+      <a class="btn-buy" href="${wa}" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Buy Now via WhatsApp
+      </a>
+      <a class="btn-enquire" href="https://wa.me/916369755991?text=Hi%2C+I+have+a+question+about+${encodeURIComponent(art.title)}." target="_blank">
+        💬 Enquire About This Piece
+      </a>
+      <div class="delivery-note">
+        <strong>🚚 Delivery:</strong> ${art.delivery}<br>
+        <span style="display:block;margin-top:6px">All artworks packed with acid-free tissue and bubble wrap for safe delivery across India.</span>
+      </div>
+    </div>`;
+
+            document.getElementById('artFrame').addEventListener('click', function () {
+                this.classList.toggle('zoomed');
+            });
+
+            document.getElementById('thumbs').addEventListener('click', e => {
+                const thumb = e.target.closest('.thumb');
+                if (!thumb) return;
+                navigate('detail', parseInt(thumb.dataset.id));
+            });
+
+            // Related
+            const rGrid = document.getElementById('relatedGrid');
+            rGrid.innerHTML = '';
+            artworks.filter(a => a.id !== art.id).slice(0, 4).forEach(a => {
+                const card = document.createElement('div');
+                card.className = 'related-card';
+                card.innerHTML = `<div class="related-img">${makeMandala(a, 180)}</div><div class="related-info"><div class="related-title-t">${a.title}</div><div class="related-price">${a.price}</div></div>`;
+                card.addEventListener('click', () => navigate('detail', a.id));
+                rGrid.appendChild(card);
+            });
+        }
+
+        // ═══════════════════════════
+        // ABOUT MANDALA
+        // ═══════════════════════════
+        function renderAboutMandala() {
+            const wrap = document.getElementById('aboutMandalaWrap');
+            if (wrap && !wrap.children.length) {
+                const fakeArt = { id: 99, color1: '#C9A84C', color2: '#7B3FA0', color3: '#00C9B1' };
+                wrap.innerHTML = makeMandala(fakeArt, 400, 'high');
+            }
+        }
+
+        // ═══════════════════════════
+        // TESTIMONIALS SLIDER
+        // ═══════════════════════════
+        let tIndex = 0;
+        const tTotal = 5;
+
+        function testimonialGo(idx) {
+            tIndex = (idx + tTotal) % tTotal;
+            const track = document.getElementById('testimonialTrack');
+            const cards = track.querySelectorAll('.testimonial-card');
+            const cardW = cards[0]?.offsetWidth + 20 || 340;
+            track.style.transform = `translateX(-${tIndex * cardW}px)`;
+            document.querySelectorAll('.t-dot').forEach((d, i) => d.classList.toggle('active', i === tIndex));
+        }
+
+        function testimonialNext() { testimonialGo(tIndex + 1); }
+        function testimonialPrev() { testimonialGo(tIndex - 1); }
+
+        function initTestimonials() {
+            const dots = document.getElementById('tDots');
+            if (!dots) return;
+            for (let i = 0; i < tTotal; i++) {
+                const d = document.createElement('div');
+                d.className = 't-dot' + (i === 0 ? ' active' : '');
+                d.addEventListener('click', () => testimonialGo(i));
+                dots.appendChild(d);
+            }
+            setInterval(testimonialNext, 4500);
+        }
+
+        // ═══════════════════════════
+        // CONTACT FORM
+        // ═══════════════════════════
+        function submitForm() {
+            const name = document.getElementById('fname').value.trim();
+            const email = document.getElementById('femail').value.trim();
+            const subject = document.getElementById('fsubject').value;
+            const msg = document.getElementById('fmessage').value.trim();
+            if (!name || !email || !msg) { alert('Please fill in your name, email, and message.'); return; }
+            document.getElementById('contactForm').style.display = 'none';
+            document.getElementById('formSuccess').style.display = 'block';
+        }
+
+        // ═══════════════════════════
+        // SCROLL OBSERVER
+        // ═══════════════════════════
+        let fadeObserver;
+
+        function initFadeObserver() {
+            if (fadeObserver) fadeObserver.disconnect();
+            fadeObserver = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) { e.target.classList.add('visible'); fadeObserver.unobserve(e.target); }
+                });
+            }, { threshold: 0.08 });
+            document.querySelectorAll('.fade-in').forEach(el => {
+                if (!el.classList.contains('visible')) fadeObserver.observe(el);
+            });
+        }
+
+        // ═══════════════════════════
+        // NAVBAR SCROLL
+        // ═══════════════════════════
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+            document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 400);
+        }, { passive: true });
+
+        // ═══════════════════════════
+        // HAMBURGER
+        // ═══════════════════════════
+        function toggleMenu() {
+            const h = document.getElementById('hamburger');
+            h.classList.toggle('open');
+            document.getElementById('mobileMenu').classList.toggle('open');
+        }
+
+        function closeMenu() {
+            document.getElementById('hamburger').classList.remove('open');
+            document.getElementById('mobileMenu').classList.remove('open');
+        }
+
+        // ═══════════════════════════
+        // CURSOR GLOW
+        // ═══════════════════════════
+        const cursorGlow = document.getElementById('cursor-glow');
+        window.addEventListener('mousemove', e => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        }, { passive: true });
+
+        // ═══════════════════════════
+        // HERO SVG LINES
+        // ═══════════════════════════
+        function drawHeroLines() {
+            const g = document.getElementById('heroLines');
+            if (!g) return;
+            const n = 16;
+            for (let i = 0; i < n; i++) {
+                const ang = (i / n) * Math.PI * 2;
+                const x = 250 + 240 * Math.sin(ang), y = 250 - 240 * Math.cos(ang);
+                const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                l.setAttribute('x1', '250'); l.setAttribute('y1', '250');
+                l.setAttribute('x2', x); l.setAttribute('y2', y);
+                l.setAttribute('stroke', '#C9A84C'); l.setAttribute('stroke-width', '0.4');
+                l.setAttribute('opacity', '0.5');
+                g.appendChild(l);
+            }
+        }
+
+        // ═══════════════════════════
+        // LOADER
+        // ═══════════════════════════
+        (function () {
+            const loader = document.getElementById('loader');
+            const svg = document.getElementById('loaderSvg');
+            const pct = document.getElementById('loaderPct');
+            const bar = document.getElementById('loaderBar');
+            const label = document.getElementById('bp-label');
+            const logo = document.getElementById('logoReveal');
+
+            function animPct(from, to, dur, cb) {
+                const start = performance.now();
+                (function step(now) {
+                    const p = Math.min((now - start) / dur, 1);
+                    const val = Math.round(from + (to - from) * p);
+                    pct.textContent = val + '%';
+                    bar.style.width = val + '%';
+                    p < 1 ? requestAnimationFrame(step) : cb?.();
+                })(start);
+            }
+
+            setTimeout(() => {
+                animPct(0, 25, 800, () => {
+                    label.textContent = "Sketching Blueprint Lines…";
+                    setTimeout(() => {
+                        animPct(25, 50, 900, () => {
+                            label.textContent = "Drawing Mandala Geometry…";
+                            setTimeout(() => {
+                                svg.classList.add('color-fill');
+                                label.textContent = "Filling Sacred Colors…";
+                                animPct(50, 75, 800, () => {
+                                    setTimeout(() => {
+                                        animPct(75, 100, 700, () => {
+                                            label.textContent = "Revealing Your Studio…";
+                                            setTimeout(() => {
+                                                [svg, pct, document.querySelector('.loader-bar-wrap'), label].forEach(el => {
+                                                    el.style.transition = 'opacity 0.5s';
+                                                    el.style.opacity = '0';
+                                                });
+                                                logo.style.transition = 'opacity 0.8s';
+                                                logo.style.opacity = '1';
+                                                setTimeout(() => {
+                                                    loader.style.transition = 'opacity 1s';
+                                                    loader.style.opacity = '0';
+                                                    setTimeout(() => {
+                                                        loader.style.display = 'none';
+                                                        initFadeObserver();
+                                                    }, 1000);
+                                                }, 1600);
+                                            }, 400);
+                                        });
+                                    }, 300);    
+                                });
+                            }, 1000);
+                        });
+                    }, 900);
+                });
+            }, 1000);
+        })();
+
+        // ═══════════════════════════
+        // INIT
+        // ═══════════════════════════
+        document.addEventListener('DOMContentLoaded', () => {
+            drawHeroLines();
+            renderFeatured();
+            injectFooter('home');
+            initTestimonials();
+            initFadeObserver();
+        });
+    </script>
+</body>
+
+</html>
